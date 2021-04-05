@@ -10,6 +10,25 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+let countResponses = 0
+
+app.use(async (req, res, next) => {
+
+	if(req.url === '/answer') {
+		countResponses++
+	}
+
+	next()
+})
+
+// count users response to the server
+app.get('/count', (_, res) => {
+	res.send({
+		counts: countResponses,
+		message: 'How much users check their answers. PS. counts from the last execution'
+	}).end()
+})
+
 // create question
 app.post('/questions', async (req, res) => {
 
