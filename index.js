@@ -76,11 +76,22 @@ app.put('/questions', async (req, res) => {
 
 		const editQuestion = await fetch(SQL_EDIT, status, question_id)
 
-		res.send({
-			status: 200,
-			message: 'question edited',
-			data: editQuestion
-		}).end()
+		if(editQuestion[0].length > 0) {
+
+			res.send({
+				status: 200,
+				message: 'question edited',
+				data: editQuestion
+			}).end()
+
+		} else {
+
+			res.send({
+				status: 404,
+				message: 'question not found :('
+			}).end()
+
+		}
 
 	} catch(e) {
 		console.log(e)
