@@ -1,3 +1,4 @@
+const sha1 = require('sha1')
 const express = require('express')
 const { data } = require('./src/data')
 
@@ -25,6 +26,19 @@ app.post('/check', async (req, res) => {
 	const answerRes = await data.find(q => q.id === question_id)
 
 	res.send(answerRes).end()
+})
+
+app.post('/answer', async (req, res) => {
+
+	const { answer, question_id } = req.body
+
+	const answerRes = await data.find(q => {
+		if(q.id === question_id) {
+			return q.true === answer ? true : false
+		}
+	})
+
+	res.send({ response: answerRes ? true : false }).end()
 })
 
 app.listen(PORT, () => console.log(`ready at http://localhost:${PORT}`))
