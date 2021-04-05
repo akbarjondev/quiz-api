@@ -152,14 +152,15 @@ app.post('/answer', async (req, res) => {
 			question_true = $1 and question_id = $2
 	`, answer, question_id)
 
-	let result = false
+	let result = false, status = 400
 
 	if(answerRes.length > 0) {
 		result = true
+		status = 200
 	}
 
 	res.send({
-		status: 400,
+		status: status,
 		message: result
 	}).end()
 })
