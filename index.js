@@ -52,6 +52,46 @@ app.post('/questions', async (req, res) => {
 	}
 
 })
+
+// edit question
+app.put('/questions', async (req, res) => {
+
+	const { question_id, status } = req.body
+
+	try {
+		
+		const SQL_EDIT = `
+			update 
+				questions
+			set
+				question_active = $1
+			where
+				question_id = $2
+			returning
+				question_id
+			;
+		`
+
+		const editQuestion = await fetch(SQL_EDIT, status, question_id)
+
+		res.send({
+			status: 200,
+			message: 'question edited',
+			data: editQuestion
+		}).end()
+
+	} catch(e) {
+		console.log(e)
+	
+		res.send({
+			status: 500,
+			message: e.message
+		}).end()
+	}
+
+})
+
+// fetch all Questions without true answer
 app.get('/questions', async (req, res) => {
 	const onlyQuestions = await data.map(d => {
 		return {
