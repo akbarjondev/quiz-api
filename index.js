@@ -11,7 +11,7 @@ app.use(express.json())
 // create question
 app.post('/questions', async (req, res) => {
 
-	const { question, answers, true } = req.body
+	const { question, answers, true_answer } = req.body
 
 	try {
 		// insert question
@@ -22,7 +22,7 @@ app.post('/questions', async (req, res) => {
 			;
 		`
 
-		const insertQuestion = await fetch(SQL_QUESTION, question)
+		const insertQuestion = await fetch(SQL_QUESTION, question, true_answer)
 
 		const questionId = insertQuestion[0].question_id
 
