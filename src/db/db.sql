@@ -32,6 +32,7 @@ values('Namozning', 3),
 ;
 
 select 
+	q.question_id as id,
 	q.question_text as question,
 	array_agg(a.answer_text) as answers
 from 
@@ -39,5 +40,5 @@ from
 left join
 	answers as a on q.question_id = a.question_id
 group by
-	question
+	question, id
 ;

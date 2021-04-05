@@ -1,6 +1,7 @@
 const sha1 = require('sha1')
 const express = require('express')
 const { data } = require('./src/data')
+const { fetch } = require('./src/db/db')
 
 const PORT = process.env.PORT || 4000
 const app = express()
@@ -93,17 +94,27 @@ app.put('/questions', async (req, res) => {
 
 // fetch all Questions without true answer
 app.get('/questions', async (req, res) => {
-	const onlyQuestions = await data.map(d => {
-		return {
-			id: d.id,
-			question: d.question,
-			answer: d.answer
-		}
-	})
+
+	const selectQuestons = `
+		select 
+			q.question_id as id,
+			q.question_text as question,
+			array_agg(a.answer_text) as answers
+		from 
+			questions as q
+		left join
+			answers as a on q.question_id = a.question_id
+		group by
+			question, id
+		;
+	`
+
+	const onlyQuestions = await fetch(selectQuestons)
 
 	res.send(onlyQuestions).end()
 })
 
+// deprecated
 app.post('/check', async (req, res) => {
 
 	const { question_id } = req.body
@@ -113,6 +124,7 @@ app.post('/check', async (req, res) => {
 	res.send(answerRes).end()
 })
 
+// check is Answer true or false 
 app.post('/answer', async (req, res) => {
 
 	const { answer, question_id } = req.body
