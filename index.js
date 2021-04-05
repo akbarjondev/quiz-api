@@ -11,8 +11,14 @@ app.use(express.json())
 app.use(cors())
 
 let countResponses = 0
+let history = []
 
 app.use(async (req, res, next) => {
+
+	history.push({
+		route: req.url,
+		when: new Date()
+	})
 
 	if(req.url === '/answer') {
 		countResponses++
@@ -24,8 +30,9 @@ app.use(async (req, res, next) => {
 // count users response to the server
 app.get('/count', (_, res) => {
 	res.send({
-		counts: countResponses,
-		message: 'How much users check their answers. PS. counts from the last execution'
+		count_answer: countResponses,
+		message: 'How much users check their answers. PS. counts from the last execution',
+		history: history
 	}).end()
 })
 
