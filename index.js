@@ -40,7 +40,8 @@ app.post('/questions', async (req, res) => {
 
 		res.send({
 			status: 200,
-			message: 'question added'
+			message: 'question added',
+			data: insertQuestion
 		})
 
 	} catch(e) {
@@ -104,6 +105,8 @@ app.get('/questions', async (req, res) => {
 			questions as q
 		left join
 			answers as a on q.question_id = a.question_id
+		where
+			question_active = 1
 		group by
 			question, id
 		;
