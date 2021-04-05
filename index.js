@@ -1,3 +1,4 @@
+const cors = require('cors')
 const sha1 = require('sha1')
 const express = require('express')
 const { data } = require('./src/data')
@@ -7,6 +8,7 @@ const PORT = process.env.PORT || 4000
 const app = express()
 
 app.use(express.json())
+app.use(cors())
 
 // create question
 app.post('/questions', async (req, res) => {
