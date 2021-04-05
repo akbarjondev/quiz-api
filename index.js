@@ -7,6 +7,51 @@ const app = express()
 
 app.use(express.json())
 
+// create question
+app.post('/questions', async (req, res) => {
+
+	const { question, answers } = req.body
+
+	try {
+		// insert question
+		const SQL_QUESTION = `
+			insert into questions(question_text)
+			values($1)
+			returning question_id
+			;
+		`
+
+		const insertQuestion = await fetch(SQL_QUESTION, question)
+
+		const questionId = insertQuestion[0].question_id
+
+		// insert answer
+			const SQL_ANSWERS = `
+			insert into answers(answer_text, question_id)
+			values($1, $2);
+		`
+
+		answers.forEach( async (answer) => {
+
+			const insertAnswers = await fetch(SQL_ANSWERS, answer, questionId)
+
+		})	
+
+		res.send({
+			status: 200,
+			message: 'question added'
+		})
+
+	} catch(e) {
+		console.log(e)
+
+		res.send({
+			status: 500,
+			message: e.message
+		})
+	}
+
+})
 app.get('/questions', async (req, res) => {
 	const onlyQuestions = await data.map(d => {
 		return {
