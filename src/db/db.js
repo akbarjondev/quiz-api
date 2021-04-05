@@ -6,7 +6,7 @@ const pool = new Pool({
 	user: process.env.USER,
 	password: process.env.PASSWORD,
 	port: 5432,
-	host: 'localhost'
+	host: process.env.HOST
 })
 
 const fetch = async (SQL, ...params) => {
