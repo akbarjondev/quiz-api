@@ -16,6 +16,7 @@ let history = []
 app.use(async (req, res, next) => {
 
 	history.push({
+		method: req.method,
 		route: req.url,
 		when: new Date()
 	})
