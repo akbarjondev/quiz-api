@@ -76,7 +76,7 @@ app.put('/questions', async (req, res) => {
 
 		const editQuestion = await fetch(SQL_EDIT, status, question_id)
 
-		if(editQuestion[0].length > 0) {
+		if(editQuestion.length > 0) {
 
 			res.send({
 				status: 200,
