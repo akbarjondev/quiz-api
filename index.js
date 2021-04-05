@@ -11,13 +11,13 @@ app.use(express.json())
 // create question
 app.post('/questions', async (req, res) => {
 
-	const { question, answers } = req.body
+	const { question, answers, true } = req.body
 
 	try {
 		// insert question
 		const SQL_QUESTION = `
-			insert into questions(question_text)
-			values($1)
+			insert into questions(question_text, question_true)
+			values($1, $2)
 			returning question_id
 			;
 		`
@@ -143,13 +143,25 @@ app.post('/answer', async (req, res) => {
 
 	const { answer, question_id } = req.body
 
-	const answerRes = await data.find(q => {
-		if(q.id === question_id) {
-			return q.true === answer ? true : false
-		}
-	})
+	const answerRes = await fetch(`
+		select
+			question_id
+		from
+			questions
+		where
+			question_true = $1 and question_id = $2
+	`, answer, question_id)
 
-	res.send({ response: answerRes ? true : false }).end()
+	let result = false
+
+	if(answerRes.length > 0) {
+		result = true
+	}
+
+	res.send({
+		status: 400,
+		message: result
+	}).end()
 })
 
 app.listen(PORT, () => console.log(`ready at http://localhost:${PORT}`))

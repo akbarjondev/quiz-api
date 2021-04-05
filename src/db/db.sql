@@ -12,6 +12,8 @@ create table questions(
 	question_created_at timestamp default current_timestamp
 );
 
+alter table questions add column question_true varchar(255) not null;
+
 create table answers(
 	answer_id serial not null primary key,
 	answer_text varchar(255) not null,
