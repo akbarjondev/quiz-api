@@ -15,7 +15,7 @@ app.use(cors())
 // write history
 app.use(async (req, res, next) => {
 
-	const obj = req.path === 'GET' ? `${req.url};;${req.method}` : `${req.url};;${req.method};;${req.body}`
+	const obj = req.method === 'GET' ? `${req.url};;${req.method}` : `${req.url};;${req.method};;${JSON.stringify(req.body)}`
 
 	await fetch(`
 		insert into 
