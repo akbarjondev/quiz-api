@@ -208,7 +208,7 @@ app.get('/test', async (req, res) => {
 
 		try {
 			
-			const fetch_res = history.map(obj => {
+			const fetch_res = history.map(async (obj) => {
 
 				const [ answerRes ] = await fetch(`
 				insert into 
