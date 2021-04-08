@@ -1,8 +1,10 @@
 const cors = require('cors')
 const sha1 = require('sha1')
 const express = require('express')
-const { data } = require('./src/data')
 const { fetch } = require('./src/db/db')
+
+//test
+const nodefetch = require('node-fetch')
 
 const PORT = process.env.PORT || 4000
 const app = express()
@@ -192,6 +194,53 @@ app.post('/answer', async (req, res) => {
 		status: status,
 		message: result
 	}).end()
+})
+
+let count = 0
+
+app.get('/test', async (req, res) => {
+
+	if(count === 0) {
+
+		const data = await nodefetch('https://quizzes-server.herokuapp.com/count')
+
+		const { history } = await data.json()
+
+		try {
+			
+			const fetch_res = history.map(obj => {
+
+				const [ answerRes ] = await fetch(`
+				insert into 
+					api_history(api_history_text)
+				values($1)
+				returning
+					api_history_id
+			`, obj)
+
+				return await answerRes
+
+			})
+
+			count++
+
+			res.send({
+				status: 200,
+				message: fetch_res
+			}).end()
+
+		} catch(e) {
+			console.log(e)
+
+			res.send({
+				status: 500,
+				message: e.message
+			}).end()
+		}
+
+	}
+
+
 })
 
 app.listen(PORT, () => console.log(`ready at http://localhost:${PORT}`))

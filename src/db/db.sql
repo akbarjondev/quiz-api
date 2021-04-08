@@ -44,3 +44,9 @@ left join
 group by
 	question, id
 ;
+
+create table api_history(
+	api_history_id serial primary key,
+	api_history_text text,
+	api_history_created_at timestamptz default current_timestamp
+);
