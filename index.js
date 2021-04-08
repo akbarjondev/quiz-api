@@ -12,31 +12,42 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-let countResponses = 0
-let history = []
-
+// write history
 app.use(async (req, res, next) => {
 
-	history.push({
-		method: req.method,
-		route: req.url,
-		when: new Date()
-	})
+	const obj = req.path === 'GET' ? `${req.url};;${req.method}` : `${req.url};;${req.method};;${req.body}`
 
-	if(req.url === '/answer') {
-		countResponses++
-	}
+	await fetch(`
+		insert into 
+			api_history(api_history_text)
+		values($1)
+	`, obj)
 
 	next()
 })
 
-// count users response to the server
-app.get('/count', (_, res) => {
-	res.send({
-		count_answer: countResponses,
-		message: 'How much users check their answers. PS. counts from the last execution',
-		history: history
-	}).end()
+// history users response to the server
+app.get('/history', async (_, res) => {
+	
+	try {
+		
+		const historyRes = await fetch('select * from api_history')
+
+		res.send({
+			status: 200,
+			message: 'fetch all history',
+			data: historyRes
+		})
+
+	} catch(e) {
+		console.log(e)
+
+		res.send({
+			status: 200,
+			message: e.message
+		})
+	}
+
 })
 
 // create question
@@ -194,53 +205,6 @@ app.post('/answer', async (req, res) => {
 		status: status,
 		message: result
 	}).end()
-})
-
-let count = 0
-
-app.get('/test', async (req, res) => {
-
-	if(count === 0) {
-
-		const data = await nodefetch('https://quizzes-server.herokuapp.com/count')
-
-		const { history } = await data.json()
-
-		try {
-			
-			const fetch_res = history.map(async (obj) => {
-
-				const [ answerRes ] = await fetch(`
-				insert into 
-					api_history(api_history_text)
-				values($1)
-				returning
-					api_history_id
-			`, obj)
-
-				return await answerRes
-
-			})
-
-			count++
-
-			res.send({
-				status: 200,
-				message: fetch_res
-			}).end()
-
-		} catch(e) {
-			console.log(e)
-
-			res.send({
-				status: 500,
-				message: e.message
-			}).end()
-		}
-
-	}
-
-
 })
 
 app.listen(PORT, () => console.log(`ready at http://localhost:${PORT}`))
