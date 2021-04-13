@@ -50,3 +50,5 @@ create table api_history(
 	api_history_text text,
 	api_history_created_at timestamptz default current_timestamp
 );
+
+alter table add column api_history_ip varchar(20);

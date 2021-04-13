@@ -10,42 +10,50 @@ const PORT = process.env.PORT || 4000
 const app = express()
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({ origin: '*' }))
 
 // write history
 app.use(async (req, res, next) => {
 
 	const obj = req.method === 'GET' ? `${req.url};;${req.method}` : `${req.url};;${req.method};;${JSON.stringify(req.body)}`
 
+	const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+
 	await fetch(`
 		insert into 
-			api_history(api_history_text)
-		values($1)
-	`, obj)
+			api_history(api_history_text, api_history_ip)
+		values($1, $2)
+	`, obj, ip)
 
 	next()
 })
 
 // history users response to the server
-app.get('/history', async (_, res) => {
+app.get('/history/:secret', async (req, res) => {
 	
-	try {
+	const { secret } = req.params
+
+	if(scret = 'Glazer11235Team') {
 		
-		const historyRes = await fetch('select * from api_history')
+		try {
+			
+			const historyRes = await fetch('select * from api_history')
 
-		res.send({
-			status: 200,
-			message: 'fetch all history',
-			data: historyRes
-		})
+			res.send({
+				status: 200,
+				message: 'fetch all history',
+				data: historyRes
+			})
 
-	} catch(e) {
-		console.log(e)
+		} catch(e) {
+			console.log(e)
 
-		res.send({
-			status: 200,
-			message: e.message
-		})
+			res.send({
+				status: 200,
+				message: e.message
+			})
+		}
+
 	}
 
 })
