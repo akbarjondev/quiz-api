@@ -52,3 +52,4 @@ create table api_history(
 );
 
 alter table add column api_history_ip varchar(20);
+alter table add column api_history_geoip varchar(1000);

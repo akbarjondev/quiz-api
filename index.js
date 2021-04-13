@@ -1,4 +1,5 @@
 const cors = require('cors')
+const { lookup } = require('geoip-lite');
 const sha1 = require('sha1')
 const express = require('express')
 const { fetch } = require('./src/db/db')
@@ -19,11 +20,13 @@ app.use(async (req, res, next) => {
 
 	const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 
+	const geoIP = JSON.stringify(lookup(ip))
+
 	await fetch(`
 		insert into 
-			api_history(api_history_text, api_history_ip)
-		values($1, $2)
-	`, obj, ip)
+			api_history(api_history_text, api_history_ip, api_history_geoip)
+		values($1, $2, $3)
+	`, obj, ip, geoIP)
 
 	next()
 })
