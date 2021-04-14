@@ -32,15 +32,15 @@ app.use(async (req, res, next) => {
 })
 
 // history users response to the server
-app.get('/history/:secret', async (req, res) => {
+app.get('/history/:secret/:limit', async (req, res) => {
 	
-	const { secret } = req.params
+	const { secret, limit } = req.params
 
 	if(scret = 'Glazer11235Team') {
 		
 		try {
 			
-			const historyRes = await fetch('select * from api_history')
+			const historyRes = await fetch('select * from api_history order by api_history_id desc limit $1;', limit)
 
 			res.send({
 				status: 200,
